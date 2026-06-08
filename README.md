@@ -98,6 +98,27 @@ from playoff_diagrams import load_bracket, render_svg
 svg = render_svg(load_bracket("examples/libertadores-2026.json"))
 ```
 
+### Use it in another project (e.g. a Django app)
+
+It is a standard pip-installable package with no runtime dependencies. To add it to
+another project's virtual environment, install it straight from GitHub:
+
+```bash
+pip install git+https://github.com/anibalpacheco/playoff-diagrams.git
+```
+
+Pin a specific release or commit with `...playoff-diagrams.git@<tag-or-sha>`, or add
+that same line to your `requirements.txt`. Then in your views:
+
+```python
+from django.http import HttpResponse
+from playoff_diagrams import parse_bracket, render_svg
+
+def bracket_svg(request, championship):
+    svg = render_svg(parse_bracket(championship.bracket_json))
+    return HttpResponse(svg, content_type="image/svg+xml")
+```
+
 ### Running the tests
 
 ```bash

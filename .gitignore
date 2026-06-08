@@ -33,3 +33,6 @@ htmlcov/
 *.png
 !docs/*.png
 !tests/golden/*.svg
+
+# Local, unversioned scratch space (personal notes, drafts — never committed)
+/.local/
