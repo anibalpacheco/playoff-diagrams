@@ -29,10 +29,16 @@ def _require(obj: dict, key: str, where: str) -> Any:
 
 
 def _parse_slot(data: dict, where: str) -> Slot:
+    # A winner_of slot may also carry a resolved team name (and id/seed).
+    if "winner_of" in data:
+        return Slot(
+            winner_of=data["winner_of"],
+            team=data.get("team"),
+            team_id=data.get("id"),
+            seed=data.get("seed"),
+        )
     if "team" in data:
         return Slot(team=data["team"], team_id=data.get("id"), seed=data.get("seed"))
-    if "winner_of" in data:
-        return Slot(winner_of=data["winner_of"])
     if data.get("tbd") is True:
         return Slot(tbd=True)
     raise BracketError(
@@ -46,9 +52,20 @@ def _parse_leg(data: dict, where: str) -> Leg:
         p = data["pens"]
         pens = Pens(home=_require(p, "home", where), away=_require(p, "away", where))
     return Leg(
-        home=_require(data, "home", where),
-        away=_require(data, "away", where),
+        home=data.get("home"),
+        away=data.get("away"),
         pens=pens,
+        ref=data.get("ref"),
+    )
+
+
+def render_options(data: dict) -> RenderOptions:
+    """Build :class:`RenderOptions` from a document's optional ``render`` object."""
+    r = data.get("render") or {}
+    return RenderOptions(
+        scores=r.get("scores", "aggregate"),
+        max_label_chars=r.get("max_label_chars", 22),
+        box_width=r.get("box_width", 190),
     )
 
 
@@ -61,22 +78,25 @@ def _parse_match(data: dict) -> Match:
         home=_parse_slot(_require(data, "home", where), where),
         away=_parse_slot(_require(data, "away", where), where),
         legs=legs,
-        ref=data.get("ref"),
         winner=data.get("winner"),
     )
 
 
 def parse_bracket(data: dict) -> Bracket:
-    """Build a :class:`Bracket` from an already-loaded JSON dict."""
+    """Build a :class:`Bracket` from an already-loaded JSON dict.
+
+    ``tournament`` is optional here: it may be supplied dynamically at render time (see
+    :class:`~playoff_diagrams.diagram.PlayoffDiagram`).
+    """
     rounds = []
     for rd in _require(data, "rounds", "document"):
         name = _require(rd, "name", "round")
         matches = [_parse_match(m) for m in _require(rd, "matches", f"round '{name}'")]
         rounds.append(Round(name=name, matches=matches))
-    render = RenderOptions(scores=(data.get("render") or {}).get("scores", "aggregate"))
+    render = render_options(data)
     bracket = Bracket(
-        tournament=_require(data, "tournament", "document"),
         rounds=rounds,
+        tournament=data.get("tournament", ""),
         season=data.get("season"),
         format=data.get("format", "single-elimination"),
         render=render,

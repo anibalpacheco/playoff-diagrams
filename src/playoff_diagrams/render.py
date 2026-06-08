@@ -8,12 +8,11 @@ from __future__ import annotations
 
 from xml.sax.saxutils import escape
 
-from .layout import BOX_H, BOX_W, ROW_H, Layout, PlacedMatch, SideView, compute_layout
+from .layout import BOX_H, ROW_H, Layout, PlacedMatch, SideView, compute_layout
 from .model import Bracket
 
 _LABEL_PAD = 10
 _SCORE_PAD = 8
-_MAX_LABEL_CHARS = 22
 
 _STYLE = """
   .pd-bg { fill: #ffffff; }
@@ -29,40 +28,47 @@ _STYLE = """
 """.rstrip()
 
 
-def _truncate(text: str) -> str:
-    if len(text) <= _MAX_LABEL_CHARS:
+def _truncate(text: str, limit: int) -> str:
+    if len(text) <= limit:
         return text
-    return text[: _MAX_LABEL_CHARS - 1] + "…"
+    return text[: max(1, limit - 1)] + "…"
 
 
-def _row(out: list[str], pm: PlacedMatch, side: SideView, top: float) -> None:
+def _row(
+    out: list[str],
+    pm: PlacedMatch,
+    side: SideView,
+    top: float,
+    max_chars: int,
+    box_w: float,
+) -> None:
     text_y = top + ROW_H / 2 + 4
     cls = "pd-win" if side.is_winner else ""
     out.append(f'<g class="{cls}">')
     out.append(
         f'<text class="pd-team" x="{pm.x + _LABEL_PAD:.0f}" y="{text_y:.0f}">'
-        f"{escape(_truncate(side.label))}</text>"
+        f"{escape(_truncate(side.label, max_chars))}</text>"
     )
     if side.score:
         out.append(
-            f'<text class="pd-score" x="{pm.x + BOX_W - _SCORE_PAD:.0f}" '
+            f'<text class="pd-score" x="{pm.x + box_w - _SCORE_PAD:.0f}" '
             f'y="{text_y:.0f}">{escape(side.score)}</text>'
         )
     out.append("</g>")
 
 
-def _match(out: list[str], pm: PlacedMatch) -> None:
+def _match(out: list[str], pm: PlacedMatch, max_chars: int, box_w: float) -> None:
     out.append(
         f'<rect class="pd-box" x="{pm.x:.0f}" y="{pm.y:.0f}" '
-        f'width="{BOX_W}" height="{BOX_H}" rx="3"/>'
+        f'width="{box_w:.0f}" height="{BOX_H}" rx="3"/>'
     )
     mid = pm.y + ROW_H
     out.append(
         f'<line class="pd-divider" x1="{pm.x:.0f}" y1="{mid:.0f}" '
-        f'x2="{pm.x + BOX_W:.0f}" y2="{mid:.0f}"/>'
+        f'x2="{pm.x + box_w:.0f}" y2="{mid:.0f}"/>'
     )
-    _row(out, pm, pm.home, pm.y)
-    _row(out, pm, pm.away, mid)
+    _row(out, pm, pm.home, pm.y, max_chars, box_w)
+    _row(out, pm, pm.away, mid, max_chars, box_w)
 
 
 def render_layout(bracket: Bracket, layout: Layout) -> str:
@@ -93,7 +99,7 @@ def render_layout(bracket: Bracket, layout: Layout) -> str:
         out.append(f'<path class="pd-link" d="{d}"/>')
 
     for pm in layout.matches:
-        _match(out, pm)
+        _match(out, pm, bracket.render.max_label_chars, layout.box_width)
 
     out.append("</svg>")
     return "\n".join(out)

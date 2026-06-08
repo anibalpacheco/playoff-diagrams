@@ -23,8 +23,18 @@ maintained. The renderer turns the JSON into an SVG deterministically.
 - **Layout is deterministic** — geometry of the bracket tree is computed in code.
   No external layout engine (no Graphviz), no heavy dependencies. SVG is emitted
   directly as a string.
-- **Winner is computed by default**: aggregate of `legs`; on a tie, `pens` decides;
-  an optional explicit `winner` field overrides. No away-goals rule in the MVP.
+- **The renderer is pure: it computes nothing about the tournament.** The winner of a
+  match is exactly its explicit `winner` field; an unresolved `winner_of` is a
+  placeholder unless the slot already carries a resolved `team`. Deciding ties and
+  advancing teams is the job of whatever maintains the JSON, not the renderer. No
+  away-goals rule.
+- **Host integration via `PlayoffDiagram` (`diagram.py`).** Each `leg` may carry a
+  `ref` (id of the real game). Subclass `PlayoffDiagram`, override `get_match(ref)`
+  (returns `[home_side, away_side]`, local first; each side may have `team`/`goals`/
+  `pens`), and optionally `get_tournament()` / `get_season()`, then
+  `MyDiagram(document).render()`. The base class needs no host and renders a
+  self-contained document unchanged. `tournament`/`season` are optional in the JSON so
+  they can be supplied this way.
 - **Display preferences live in the document**, under a top-level `render` object
   (e.g. `{"scores": "aggregate" | "legs"}`), so presentation changes need no code
   change. Add new presentation knobs there.
@@ -42,12 +52,13 @@ machine-checkable **`spec/schema.json`** (JSON Schema) and worked examples under
 
 ```
 src/playoff_diagrams/
-  __init__.py   # public API: load_bracket, parse_bracket, render_svg, models
+  __init__.py   # public API: PlayoffDiagram, load_bracket, parse_bracket, render_svg, models
   __main__.py   # CLI: `playoff-diagrams in.json -o out.svg` / `python -m playoff_diagrams`
-  model.py      # data models + result logic (winner_side, aggregate, shootout, Resolver)
+  model.py      # data models + display helpers (aggregate, pens_of, Resolver)
   parse.py      # JSON -> validated model; validate_document() needs `jsonschema`
   layout.py     # deterministic bracket geometry (columns, centering, connectors)
   render.py     # model -> SVG string
+  diagram.py    # PlayoffDiagram: subclassable host hooks (get_match/get_tournament/get_season)
 tests/
   test_model.py   # result-logic and parsing unit tests
   test_render.py  # golden/snapshot SVG tests + well-formed-XML checks

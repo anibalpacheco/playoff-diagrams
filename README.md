@@ -17,14 +17,15 @@ Both diagrams below are rendered straight from the JSON files in
 
 Two-legged ties with `"scores": "legs"`
 ([`libertadores-2026.json`](examples/libertadores-2026.json)) — each leg's goals are
-shown, shootouts appear in parentheses, and the winner is emphasized. Unresolved sides
-fall back to placeholders such as "Winner SF2":
+shown, shootouts appear in parentheses, the winner of each tie is emphasized, and the
+advancing team recorded on each `winner_of` slot carries through the rounds:
 
 ![Copa Libertadores 2026 bracket](docs/libertadores-2026.png)
 
 Single matches with the default `"scores": "aggregate"`
 ([`knockout-8.json`](examples/knockout-8.json)) — one total per side, with shootouts in
-parentheses:
+parentheses. Sides that have not been resolved yet fall back to placeholders such as
+"Winner SF2":
 
 ![Example Cup bracket](docs/knockout-8.png)
 
@@ -32,7 +33,8 @@ parentheses:
 
 - **Native database support** and a universal parser.
 - A bracket node can evolve from a **placeholder** (e.g. "winner of QF1") into a
-  **reference to a real match entity** (`ref`) without changing the language.
+  **reference to a real match entity** without changing the language: each leg can carry
+  a `ref` to the real game, resolved dynamically by the host (see below).
 - The bracket layout is **deterministic** (it is essentially a tree), so no general
   graph-layout engine is needed — coordinates are computed directly and the SVG is
   emitted as a string, with no heavy dependencies.
@@ -108,7 +110,8 @@ pip install git+https://github.com/anibalpacheco/playoff-diagrams.git
 ```
 
 Pin a specific release or commit with `...playoff-diagrams.git@<tag-or-sha>`, or add
-that same line to your `requirements.txt`. Then in your views:
+that same line to your `requirements.txt`. For a self-contained document, render it
+straight away:
 
 ```python
 from django.http import HttpResponse
@@ -118,6 +121,51 @@ def bracket_svg(request, championship):
     svg = render_svg(parse_bracket(championship.bracket_json))
     return HttpResponse(svg, content_type="image/svg+xml")
 ```
+
+#### Injecting live data and dynamic title (`PlayoffDiagram`)
+
+The renderer never computes results: the winner of a match is its explicit `winner`
+field, and an advancing team is whatever `team` the document records on a `winner_of`
+slot. To feed live data from your own database instead of (or on top of) the JSON,
+subclass `PlayoffDiagram`. Whenever a leg carries a `ref`, `get_match(ref)` is called
+with it; you return that one game as `[home_side, away_side]` (local first). The
+tournament name and season can also be supplied dynamically:
+
+```python
+from playoff_diagrams import PlayoffDiagram
+
+class ChampionshipDiagram(PlayoffDiagram):
+    def __init__(self, championship):
+        super().__init__(championship.bracket_json)
+        self._championship = championship
+
+    def get_match(self, ref):
+        g = Match.objects.get(pk=ref)            # your own model
+        return [
+            {"team": g.home.name, "goals": g.home_goals, "pens": g.home_pens},
+            {"team": g.away.name, "goals": g.away_goals, "pens": g.away_pens},
+        ]
+
+    def get_tournament(self):
+        return self._championship.name
+
+    def get_season(self):
+        return str(self._championship.year)
+
+def bracket_svg(request, championship):
+    svg = ChampionshipDiagram(championship).render()
+    return HttpResponse(svg, content_type="image/svg+xml")
+```
+
+`get_match` returns only what it has — any of `team`, `goals`, `pens` per side; a
+returned `None` leaves that leg as the document defines it. Where a `winner_of` slot has
+no team yet, the resolved name is filled in from the live game while the bracket
+connector is kept.
+
+The document's display preferences are available to the hooks as `self.render_config`,
+so `get_match` can, for instance, read `self.render_config.max_label_chars` and return
+already-shortened names. Long-named cups can raise that limit (it defaults to `22`) in
+the document's `render` object.
 
 ### Running the tests
 

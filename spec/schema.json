@@ -3,7 +3,7 @@
   "$id": "https://github.com/playoff-diagrams/spec/schema.json",
   "title": "Playoff bracket source document",
   "type": "object",
-  "required": ["tournament", "rounds"],
+  "required": ["rounds"],
   "additionalProperties": false,
   "properties": {
     "tournament": { "type": "string", "minLength": 1 },
@@ -29,6 +29,16 @@
           "type": "string",
           "enum": ["aggregate", "legs"],
           "default": "aggregate"
+        },
+        "max_label_chars": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 22
+        },
+        "box_width": {
+          "type": "integer",
+          "minimum": 60,
+          "default": 190
         }
       }
     },
@@ -51,7 +61,6 @@
       "additionalProperties": false,
       "properties": {
         "id": { "type": "string", "minLength": 1 },
-        "ref": { "type": ["string", "integer"] },
         "home": { "$ref": "#/$defs/slot" },
         "away": { "$ref": "#/$defs/slot" },
         "legs": {
@@ -77,7 +86,10 @@
           "required": ["winner_of"],
           "additionalProperties": false,
           "properties": {
-            "winner_of": { "type": "string", "minLength": 1 }
+            "winner_of": { "type": "string", "minLength": 1 },
+            "team": { "type": "string", "minLength": 1 },
+            "id": { "type": ["string", "integer"] },
+            "seed": { "type": "integer", "minimum": 1 }
           }
         },
         {
@@ -91,9 +103,13 @@
     },
     "leg": {
       "type": "object",
-      "required": ["home", "away"],
+      "anyOf": [
+        { "required": ["ref"] },
+        { "required": ["home", "away"] }
+      ],
       "additionalProperties": false,
       "properties": {
+        "ref": { "type": ["string", "integer"] },
         "home": { "type": "integer", "minimum": 0 },
         "away": { "type": "integer", "minimum": 0 },
         "pens": {

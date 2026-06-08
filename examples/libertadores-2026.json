@@ -2,17 +2,20 @@
   "tournament": "Copa Libertadores",
   "season": "2026",
   "format": "single-elimination",
-  "render": { "scores": "legs" },
+  "render": { "scores": "legs", "box_width": 240 },
   "rounds": [
     {
       "name": "Quarterfinals",
       "matches": [
         {
           "id": "qf1",
-          "ref": 84021,
           "home": { "team": "Flamengo" },
           "away": { "team": "Boca Juniors" },
-          "legs": [{ "home": 2, "away": 1 }, { "home": 0, "away": 0 }]
+          "legs": [
+            { "ref": 84021, "home": 2, "away": 1 },
+            { "ref": 84022, "home": 0, "away": 0 }
+          ],
+          "winner": "home"
         },
         {
           "id": "qf2",
@@ -21,19 +24,22 @@
           "legs": [
             { "home": 1, "away": 1 },
             { "home": 0, "away": 0, "pens": { "home": 4, "away": 2 } }
-          ]
+          ],
+          "winner": "home"
         },
         {
           "id": "qf3",
           "home": { "team": "Montevideo City Torque" },
           "away": { "team": "Atletico Mineiro" },
-          "legs": [{ "home": 1, "away": 0 }, { "home": 1, "away": 2 }]
+          "legs": [{ "home": 1, "away": 0 }, { "home": 1, "away": 1 }],
+          "winner": "home"
         },
         {
           "id": "qf4",
           "home": { "team": "Corinthians" },
           "away": { "team": "Internacional" },
-          "legs": [{ "home": 3, "away": 0 }, { "home": 1, "away": 1 }]
+          "legs": [{ "home": 3, "away": 0 }, { "home": 1, "away": 1 }],
+          "winner": "home"
         }
       ]
     },
@@ -42,15 +48,17 @@
       "matches": [
         {
           "id": "sf1",
-          "home": { "winner_of": "qf1" },
-          "away": { "winner_of": "qf2" },
-          "legs": [{ "home": 0, "away": 0 }, { "home": 2, "away": 1 }]
+          "home": { "winner_of": "qf1", "team": "Flamengo" },
+          "away": { "winner_of": "qf2", "team": "River Plate" },
+          "legs": [{ "home": 0, "away": 0 }, { "home": 2, "away": 1 }],
+          "winner": "home"
         },
         {
           "id": "sf2",
-          "home": { "winner_of": "qf3" },
-          "away": { "winner_of": "qf4" },
-          "legs": [{ "home": 1, "away": 1 }]
+          "home": { "winner_of": "qf3", "team": "Montevideo City Torque" },
+          "away": { "winner_of": "qf4", "team": "Corinthians" },
+          "legs": [{ "home": 1, "away": 1 }, { "home": 2, "away": 0 }],
+          "winner": "home"
         }
       ]
     },
@@ -59,8 +67,8 @@
       "matches": [
         {
           "id": "final",
-          "home": { "winner_of": "sf1" },
-          "away": { "winner_of": "sf2" }
+          "home": { "winner_of": "sf1", "team": "Flamengo" },
+          "away": { "winner_of": "sf2", "team": "Montevideo City Torque" }
         }
       ]
     }

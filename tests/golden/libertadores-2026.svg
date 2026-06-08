@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 352" width="750" height="352" font-family="sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 352" width="900" height="352" font-family="sans-serif">
 <style>
   .pd-bg { fill: #ffffff; }
   .pd-title { font: 600 18px sans-serif; fill: #111827; }
@@ -10,84 +10,84 @@
   .pd-score { font: 400 13px sans-serif; fill: #1f2937; text-anchor: end; }
   .pd-win .pd-team, .pd-win .pd-score { font-weight: 700; fill: #065f46; }
   .pd-link { fill: none; stroke: #cbd5e1; stroke-width: 1.5; }</style>
-<rect class="pd-bg" width="750" height="352"/>
+<rect class="pd-bg" width="900" height="352"/>
 <text class="pd-title" x="20" y="28">Copa Libertadores</text>
 <text class="pd-season" x="212" y="28">2026</text>
-<text class="pd-header" x="115" y="56">Quarterfinals</text>
-<text class="pd-header" x="375" y="56">Semifinals</text>
-<text class="pd-header" x="635" y="56">Final</text>
-<path class="pd-link" d="M 210 94 L 245 94 L 245 117 L 280 117"/>
-<path class="pd-link" d="M 210 164 L 245 164 L 245 141 L 280 141"/>
-<path class="pd-link" d="M 210 234 L 245 234 L 245 257 L 280 257"/>
-<path class="pd-link" d="M 210 304 L 245 304 L 245 281 L 280 281"/>
-<path class="pd-link" d="M 470 129 L 505 129 L 505 187 L 540 187"/>
-<path class="pd-link" d="M 470 269 L 505 269 L 505 211 L 540 211"/>
-<rect class="pd-box" x="20" y="70" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="20" y1="94" x2="210" y2="94"/>
+<text class="pd-header" x="140" y="56">Quarterfinals</text>
+<text class="pd-header" x="450" y="56">Semifinals</text>
+<text class="pd-header" x="760" y="56">Final</text>
+<path class="pd-link" d="M 260 94 L 295 94 L 295 117 L 330 117"/>
+<path class="pd-link" d="M 260 164 L 295 164 L 295 141 L 330 141"/>
+<path class="pd-link" d="M 260 234 L 295 234 L 295 257 L 330 257"/>
+<path class="pd-link" d="M 260 304 L 295 304 L 295 281 L 330 281"/>
+<path class="pd-link" d="M 570 129 L 605 129 L 605 187 L 640 187"/>
+<path class="pd-link" d="M 570 269 L 605 269 L 605 211 L 640 211"/>
+<rect class="pd-box" x="20" y="70" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="20" y1="94" x2="260" y2="94"/>
 <g class="pd-win">
 <text class="pd-team" x="30" y="86">Flamengo</text>
-<text class="pd-score" x="202" y="86">2 0</text>
+<text class="pd-score" x="252" y="86">2 0</text>
 </g>
 <g class="">
 <text class="pd-team" x="30" y="110">Boca Juniors</text>
-<text class="pd-score" x="202" y="110">1 0</text>
+<text class="pd-score" x="252" y="110">1 0</text>
 </g>
-<rect class="pd-box" x="20" y="140" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="20" y1="164" x2="210" y2="164"/>
+<rect class="pd-box" x="20" y="140" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="20" y1="164" x2="260" y2="164"/>
 <g class="pd-win">
 <text class="pd-team" x="30" y="156">River Plate</text>
-<text class="pd-score" x="202" y="156">1 0 (4)</text>
+<text class="pd-score" x="252" y="156">1 0 (4)</text>
 </g>
 <g class="">
 <text class="pd-team" x="30" y="180">Palmeiras</text>
-<text class="pd-score" x="202" y="180">1 0 (2)</text>
+<text class="pd-score" x="252" y="180">1 0 (2)</text>
 </g>
-<rect class="pd-box" x="20" y="210" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="20" y1="234" x2="210" y2="234"/>
-<g class="">
+<rect class="pd-box" x="20" y="210" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="20" y1="234" x2="260" y2="234"/>
+<g class="pd-win">
 <text class="pd-team" x="30" y="226">Montevideo City Torque</text>
-<text class="pd-score" x="202" y="226">1 1</text>
+<text class="pd-score" x="252" y="226">1 1</text>
 </g>
 <g class="">
 <text class="pd-team" x="30" y="250">Atletico Mineiro</text>
-<text class="pd-score" x="202" y="250">0 2</text>
+<text class="pd-score" x="252" y="250">0 1</text>
 </g>
-<rect class="pd-box" x="20" y="280" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="20" y1="304" x2="210" y2="304"/>
+<rect class="pd-box" x="20" y="280" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="20" y1="304" x2="260" y2="304"/>
 <g class="pd-win">
 <text class="pd-team" x="30" y="296">Corinthians</text>
-<text class="pd-score" x="202" y="296">3 1</text>
+<text class="pd-score" x="252" y="296">3 1</text>
 </g>
 <g class="">
 <text class="pd-team" x="30" y="320">Internacional</text>
-<text class="pd-score" x="202" y="320">0 1</text>
+<text class="pd-score" x="252" y="320">0 1</text>
 </g>
-<rect class="pd-box" x="280" y="105" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="280" y1="129" x2="470" y2="129"/>
+<rect class="pd-box" x="330" y="105" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="330" y1="129" x2="570" y2="129"/>
 <g class="pd-win">
-<text class="pd-team" x="290" y="121">Flamengo</text>
-<text class="pd-score" x="462" y="121">0 2</text>
+<text class="pd-team" x="340" y="121">Flamengo</text>
+<text class="pd-score" x="562" y="121">0 2</text>
 </g>
 <g class="">
-<text class="pd-team" x="290" y="145">River Plate</text>
-<text class="pd-score" x="462" y="145">0 1</text>
+<text class="pd-team" x="340" y="145">River Plate</text>
+<text class="pd-score" x="562" y="145">0 1</text>
 </g>
-<rect class="pd-box" x="280" y="245" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="280" y1="269" x2="470" y2="269"/>
-<g class="">
-<text class="pd-team" x="290" y="261">Winner QF3</text>
-<text class="pd-score" x="462" y="261">1</text>
-</g>
-<g class="">
-<text class="pd-team" x="290" y="285">Corinthians</text>
-<text class="pd-score" x="462" y="285">1</text>
-</g>
-<rect class="pd-box" x="540" y="175" width="190" height="48" rx="3"/>
-<line class="pd-divider" x1="540" y1="199" x2="730" y2="199"/>
-<g class="">
-<text class="pd-team" x="550" y="191">Flamengo</text>
+<rect class="pd-box" x="330" y="245" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="330" y1="269" x2="570" y2="269"/>
+<g class="pd-win">
+<text class="pd-team" x="340" y="261">Montevideo City Torque</text>
+<text class="pd-score" x="562" y="261">1 2</text>
 </g>
 <g class="">
-<text class="pd-team" x="550" y="215">Winner SF2</text>
+<text class="pd-team" x="340" y="285">Corinthians</text>
+<text class="pd-score" x="562" y="285">1 0</text>
+</g>
+<rect class="pd-box" x="640" y="175" width="240" height="48" rx="3"/>
+<line class="pd-divider" x1="640" y1="199" x2="880" y2="199"/>
+<g class="">
+<text class="pd-team" x="650" y="191">Flamengo</text>
+</g>
+<g class="">
+<text class="pd-team" x="650" y="215">Montevideo City Torque</text>
 </g>
 </svg>

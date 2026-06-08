@@ -10,19 +10,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .model import Bracket, Match, Resolver, aggregate, shootout, winner_side
+from .model import Bracket, Match, Resolver, aggregate, pens_of
 
 # Geometry constants (SVG user units).
 MARGIN_X = 20
 TOP = 70  # room for the title and round headers
-BOX_W = 190
+BOX_W = 190  # default box width; overridable per document via render.box_width
 ROW_H = 24
 BOX_H = 2 * ROW_H
 H_GAP = 70
 V_GAP = 22
 MARGIN_BOTTOM = 24
 
-COLUMN_PITCH = BOX_W + H_GAP
 ROW_PITCH = BOX_H + V_GAP
 
 
@@ -64,20 +63,26 @@ class Layout:
     matches: list[PlacedMatch]
     connectors: list[Connector]
     headers: list[Header]
+    box_width: float = BOX_W
 
 
 def _score_text(match: Match, side: str, scores: str) -> str:
-    """Build the score string for one side under the given display mode."""
+    """Build the score string for one side under the given display mode.
+
+    This only formats the goals that are present; it does not decide a winner.
+    """
     agg = aggregate(match)
     if agg is None:
         return ""
-    pens = shootout(match)
+    pens = pens_of(match)
     pen_suffix = ""
     if pens is not None:
         pen_suffix = f" ({pens.home if side == 'home' else pens.away})"
     if scores == "legs":
         goals = " ".join(
-            str(leg.home if side == "home" else leg.away) for leg in match.legs
+            str(leg.home if side == "home" else leg.away)
+            for leg in match.legs
+            if leg.played
         )
         return goals + pen_suffix
     value = agg[0] if side == "home" else agg[1]
@@ -89,18 +94,20 @@ def _side_view(resolver: Resolver, match: Match, side: str, scores: str) -> Side
     return SideView(
         label=resolver.label(slot),
         score=_score_text(match, side, scores),
-        is_winner=winner_side(match) == side,
+        is_winner=match.winner == side,  # explicit only; never computed
     )
 
 
 def compute_layout(bracket: Bracket) -> Layout:
     resolver = Resolver(bracket)
+    bw = bracket.render.box_width
+    column_pitch = bw + H_GAP
     centers: dict[str, float] = {}
     placed: list[PlacedMatch] = []
     by_placed: dict[str, PlacedMatch] = {}
 
     for r_index, rnd in enumerate(bracket.rounds):
-        x = MARGIN_X + r_index * COLUMN_PITCH
+        x = MARGIN_X + r_index * column_pitch
         for m_index, match in enumerate(rnd.matches):
             parents = [
                 centers[s.winner_of]
@@ -122,20 +129,20 @@ def compute_layout(bracket: Bracket) -> Layout:
             placed.append(pm)
             by_placed[match.id] = pm
 
-    connectors = _connectors(bracket, by_placed)
+    connectors = _connectors(bracket, by_placed, bw)
     headers = [
-        Header(name=rnd.name, cx=MARGIN_X + i * COLUMN_PITCH + BOX_W / 2)
+        Header(name=rnd.name, cx=MARGIN_X + i * column_pitch + bw / 2)
         for i, rnd in enumerate(bracket.rounds)
     ]
 
-    width = MARGIN_X * 2 + len(bracket.rounds) * BOX_W + (len(bracket.rounds) - 1) * H_GAP
+    width = MARGIN_X * 2 + len(bracket.rounds) * bw + (len(bracket.rounds) - 1) * H_GAP
     height = max((pm.y + BOX_H for pm in placed), default=TOP) + MARGIN_BOTTOM
     return Layout(width=width, height=height, matches=placed, connectors=connectors,
-                  headers=headers)
+                  headers=headers, box_width=bw)
 
 
 def _connectors(
-    bracket: Bracket, by_placed: dict[str, PlacedMatch]
+    bracket: Bracket, by_placed: dict[str, PlacedMatch], bw: float
 ) -> list[Connector]:
     connectors: list[Connector] = []
     for rnd in bracket.rounds:
@@ -145,9 +152,9 @@ def _connectors(
                 if slot.winner_of is None or slot.winner_of not in by_placed:
                     continue
                 parent = by_placed[slot.winner_of]
-                start = (parent.x + BOX_W, parent.cy)
+                start = (parent.x + bw, parent.cy)
                 conn_y = child.y + (ROW_H / 2 if side == "home" else ROW_H + ROW_H / 2)
-                mid_x = (parent.x + BOX_W + child.x) / 2
+                mid_x = (parent.x + bw + child.x) / 2
                 connectors.append(
                     Connector(
                         points=[
