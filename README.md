@@ -20,8 +20,8 @@ leg's goals are shown, shootouts appear in parentheses, and the winner of each t
 emphasized. The first quarterfinal is **host-resolved**: its legs carry only a `ref`, so
 its teams and scores come from `get_match` (see
 [`examples/libertadores_host.py`](examples/libertadores_host.py)) rather than from the
-document. Played ties take their team names from the legs; the final records its finalists
-with `team1`/`team2` while its `winnerof` links carry the bracket:
+document. Played ties take their team names from the legs; the final is a single match —
+one leg, so just one goal figure per side — with its `winnerof` links carrying the bracket:
 
 ![Copa Libertadores 2026 bracket](docs/libertadores-2026.png)
 
@@ -60,9 +60,9 @@ Minimal example:
         {
           "id": "final",
           "legs": [
-            { "team1": "Flamengo", "goals1": 2, "team2": "Nacional", "goals2": 1 }
+            { "team1": "Flamengo", "goals1": 1, "team2": "Nacional", "goals2": 2 }
           ],
-          "winner": 1
+          "winner": 2
         }
       ]
     }

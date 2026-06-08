@@ -96,8 +96,15 @@
           "id": "final",
           "winnerof1": "sf1",
           "winnerof2": "sf2",
-          "team1": "Flamengo",
-          "team2": "Montevideo City Torque"
+          "legs": [
+            {
+              "team1": "Flamengo",
+              "goals1": 2,
+              "team2": "Montevideo City Torque",
+              "goals2": 1
+            }
+          ],
+          "winner": 1
         }
       ]
     }
