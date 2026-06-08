@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/playoff-diagrams/spec/schema.json",
+  "title": "Playoff bracket source document",
+  "type": "object",
+  "required": ["tournament", "rounds"],
+  "additionalProperties": false,
+  "properties": {
+    "tournament": { "type": "string", "minLength": 1 },
+    "season": { "type": "string" },
+    "format": {
+      "type": "string",
+      "enum": ["single-elimination"],
+      "default": "single-elimination"
+    },
+    "render": { "$ref": "#/$defs/render" },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/round" }
+    }
+  },
+  "$defs": {
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scores": {
+          "type": "string",
+          "enum": ["aggregate", "legs"],
+          "default": "aggregate"
+        }
+      }
+    },
+    "round": {
+      "type": "object",
+      "required": ["name", "matches"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "matches": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/match" }
+        }
+      }
+    },
+    "match": {
+      "type": "object",
+      "required": ["id", "home", "away"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "ref": { "type": ["string", "integer"] },
+        "home": { "$ref": "#/$defs/slot" },
+        "away": { "$ref": "#/$defs/slot" },
+        "legs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/leg" }
+        },
+        "winner": { "type": "string", "enum": ["home", "away"] }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": ["team"],
+          "additionalProperties": false,
+          "properties": {
+            "team": { "type": "string", "minLength": 1 },
+            "id": { "type": ["string", "integer"] },
+            "seed": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "required": ["winner_of"],
+          "additionalProperties": false,
+          "properties": {
+            "winner_of": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "required": ["tbd"],
+          "additionalProperties": false,
+          "properties": {
+            "tbd": { "const": true }
+          }
+        }
+      ]
+    },
+    "leg": {
+      "type": "object",
+      "required": ["home", "away"],
+      "additionalProperties": false,
+      "properties": {
+        "home": { "type": "integer", "minimum": 0 },
+        "away": { "type": "integer", "minimum": 0 },
+        "pens": {
+          "type": "object",
+          "required": ["home", "away"],
+          "additionalProperties": false,
+          "properties": {
+            "home": { "type": "integer", "minimum": 0 },
+            "away": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,104 @@
+"""Turn a bracket into an SVG string using the deterministic layout.
+
+The output is a self-contained ``<svg>`` document. Styling is driven by CSS classes so
+the diagram can be themed by the host page; sensible defaults are embedded.
+"""
+
+from __future__ import annotations
+
+from xml.sax.saxutils import escape
+
+from .layout import BOX_H, BOX_W, ROW_H, Layout, PlacedMatch, SideView, compute_layout
+from .model import Bracket
+
+_LABEL_PAD = 10
+_SCORE_PAD = 8
+_MAX_LABEL_CHARS = 22
+
+_STYLE = """
+  .pd-bg { fill: #ffffff; }
+  .pd-title { font: 600 18px sans-serif; fill: #111827; }
+  .pd-season { font: 400 13px sans-serif; fill: #6b7280; }
+  .pd-header { font: 600 12px sans-serif; fill: #374151; text-anchor: middle; }
+  .pd-box { fill: #ffffff; stroke: #d1d5db; stroke-width: 1; }
+  .pd-divider { stroke: #e5e7eb; stroke-width: 1; }
+  .pd-team { font: 400 13px sans-serif; fill: #1f2937; }
+  .pd-score { font: 400 13px sans-serif; fill: #1f2937; text-anchor: end; }
+  .pd-win .pd-team, .pd-win .pd-score { font-weight: 700; fill: #065f46; }
+  .pd-link { fill: none; stroke: #cbd5e1; stroke-width: 1.5; }
+""".rstrip()
+
+
+def _truncate(text: str) -> str:
+    if len(text) <= _MAX_LABEL_CHARS:
+        return text
+    return text[: _MAX_LABEL_CHARS - 1] + "…"
+
+
+def _row(out: list[str], pm: PlacedMatch, side: SideView, top: float) -> None:
+    text_y = top + ROW_H / 2 + 4
+    cls = "pd-win" if side.is_winner else ""
+    out.append(f'<g class="{cls}">')
+    out.append(
+        f'<text class="pd-team" x="{pm.x + _LABEL_PAD:.0f}" y="{text_y:.0f}">'
+        f"{escape(_truncate(side.label))}</text>"
+    )
+    if side.score:
+        out.append(
+            f'<text class="pd-score" x="{pm.x + BOX_W - _SCORE_PAD:.0f}" '
+            f'y="{text_y:.0f}">{escape(side.score)}</text>'
+        )
+    out.append("</g>")
+
+
+def _match(out: list[str], pm: PlacedMatch) -> None:
+    out.append(
+        f'<rect class="pd-box" x="{pm.x:.0f}" y="{pm.y:.0f}" '
+        f'width="{BOX_W}" height="{BOX_H}" rx="3"/>'
+    )
+    mid = pm.y + ROW_H
+    out.append(
+        f'<line class="pd-divider" x1="{pm.x:.0f}" y1="{mid:.0f}" '
+        f'x2="{pm.x + BOX_W:.0f}" y2="{mid:.0f}"/>'
+    )
+    _row(out, pm, pm.home, pm.y)
+    _row(out, pm, pm.away, mid)
+
+
+def render_layout(bracket: Bracket, layout: Layout) -> str:
+    out: list[str] = []
+    out.append(
+        f'<svg xmlns="http://www.w3.org/2000/svg" '
+        f'viewBox="0 0 {layout.width:.0f} {layout.height:.0f}" '
+        f'width="{layout.width:.0f}" height="{layout.height:.0f}" '
+        f'font-family="sans-serif">'
+    )
+    out.append(f"<style>{_STYLE}</style>")
+    out.append(f'<rect class="pd-bg" width="{layout.width:.0f}" '
+               f'height="{layout.height:.0f}"/>')
+
+    title = escape(bracket.tournament)
+    out.append(f'<text class="pd-title" x="20" y="28">{title}</text>')
+    if bracket.season:
+        x = 20 + round(len(bracket.tournament) * 10.5) + 14
+        out.append(f'<text class="pd-season" x="{x}" y="28">'
+                   f"{escape(bracket.season)}</text>")
+
+    for header in layout.headers:
+        out.append(f'<text class="pd-header" x="{header.cx:.0f}" y="56">'
+                   f"{escape(header.name)}</text>")
+
+    for conn in layout.connectors:
+        d = "M " + " L ".join(f"{x:.0f} {y:.0f}" for x, y in conn.points)
+        out.append(f'<path class="pd-link" d="{d}"/>')
+
+    for pm in layout.matches:
+        _match(out, pm)
+
+    out.append("</svg>")
+    return "\n".join(out)
+
+
+def render_svg(bracket: Bracket) -> str:
+    """Render ``bracket`` to a self-contained SVG document string."""
+    return render_layout(bracket, compute_layout(bracket))

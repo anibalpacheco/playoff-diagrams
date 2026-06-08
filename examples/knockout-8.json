@@ -1,0 +1,60 @@
+{
+  "tournament": "Example Cup",
+  "season": "2026",
+  "format": "single-elimination",
+  "rounds": [
+    {
+      "name": "Quarterfinals",
+      "matches": [
+        {
+          "id": "qf1",
+          "home": { "team": "Team A", "seed": 1 },
+          "away": { "team": "Team H", "seed": 8 },
+          "legs": [{ "home": 3, "away": 0 }]
+        },
+        {
+          "id": "qf2",
+          "home": { "team": "Team D", "seed": 4 },
+          "away": { "team": "Team E", "seed": 5 },
+          "legs": [{ "home": 1, "away": 2 }]
+        },
+        {
+          "id": "qf3",
+          "home": { "team": "Team B", "seed": 2 },
+          "away": { "team": "Team G", "seed": 7 },
+          "legs": [{ "home": 0, "away": 0, "pens": { "home": 5, "away": 4 } }]
+        },
+        {
+          "id": "qf4",
+          "home": { "team": "Team C", "seed": 3 },
+          "away": { "team": "Team F", "seed": 6 }
+        }
+      ]
+    },
+    {
+      "name": "Semifinals",
+      "matches": [
+        {
+          "id": "sf1",
+          "home": { "winner_of": "qf1" },
+          "away": { "winner_of": "qf2" }
+        },
+        {
+          "id": "sf2",
+          "home": { "winner_of": "qf3" },
+          "away": { "winner_of": "qf4" }
+        }
+      ]
+    },
+    {
+      "name": "Final",
+      "matches": [
+        {
+          "id": "final",
+          "home": { "winner_of": "sf1" },
+          "away": { "winner_of": "sf2" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "tournament": "Copa Libertadores",
+  "season": "2026",
+  "format": "single-elimination",
+  "render": { "scores": "legs" },
+  "rounds": [
+    {
+      "name": "Quarterfinals",
+      "matches": [
+        {
+          "id": "qf1",
+          "ref": 84021,
+          "home": { "team": "Flamengo" },
+          "away": { "team": "Boca Juniors" },
+          "legs": [{ "home": 2, "away": 1 }, { "home": 0, "away": 0 }]
+        },
+        {
+          "id": "qf2",
+          "home": { "team": "River Plate" },
+          "away": { "team": "Palmeiras" },
+          "legs": [
+            { "home": 1, "away": 1 },
+            { "home": 0, "away": 0, "pens": { "home": 4, "away": 2 } }
+          ]
+        },
+        {
+          "id": "qf3",
+          "home": { "team": "Nacional" },
+          "away": { "team": "Atletico Mineiro" },
+          "legs": [{ "home": 1, "away": 0 }, { "home": 1, "away": 2 }]
+        },
+        {
+          "id": "qf4",
+          "home": { "team": "Penarol" },
+          "away": { "team": "Internacional" },
+          "legs": [{ "home": 3, "away": 0 }, { "home": 1, "away": 1 }]
+        }
+      ]
+    },
+    {
+      "name": "Semifinals",
+      "matches": [
+        {
+          "id": "sf1",
+          "home": { "winner_of": "qf1" },
+          "away": { "winner_of": "qf2" },
+          "legs": [{ "home": 0, "away": 0 }, { "home": 2, "away": 1 }]
+        },
+        {
+          "id": "sf2",
+          "home": { "winner_of": "qf3" },
+          "away": { "winner_of": "qf4" },
+          "legs": [{ "home": 1, "away": 1 }]
+        }
+      ]
+    },
+    {
+      "name": "Final",
+      "matches": [
+        {
+          "id": "final",
+          "home": { "winner_of": "sf1" },
+          "away": { "winner_of": "sf2" }
+        }
+      ]
+    }
+  ]
+}
