@@ -1,4 +1,4 @@
-"""Load a bracket document (dict / JSON) into the dataclass model.
+"""Load a knockout stage document (dict / JSON) into the dataclass model.
 
 Structural validation against ``docs/schema.json`` is available via
 :func:`validate_document` when the optional ``jsonschema`` package is installed; the
@@ -31,7 +31,7 @@ def _require(obj: dict, key: str, where: str) -> Any:
 def _parse_side(data: dict, n: str) -> Slot:
     """Build one side of a match from its flat fields (``n`` is "1" or "2").
 
-    A side is described at match level: ``winnerof{n}`` wires the bracket, ``team{n}``
+    A side is described at match level: ``winnerof{n}`` wires advancement, ``team{n}``
     (with optional ``id{n}``) names a known/advancing team. Legs fill in
     whatever the match level leaves unset (see ``_fill_team``), so both may name the
     teams; the match-level name wins. A side with neither name nor wiring renders as
@@ -56,7 +56,7 @@ def _parse_winner(value: Any, where: str) -> Optional[str]:
 
 
 # The flat keys of a played game, as carried by an inline leg and returned by
-# PlayoffDiagram.get_match. "1" is that game's local (home) side, "2" the visitor.
+# KnockoutStage.get_match. "1" is that game's local (home) side, "2" the visitor.
 _GAME_KEYS = ("team1", "goals1", "id1", "pen1", "team2", "goals2", "id2", "pen2")
 
 
@@ -79,7 +79,7 @@ def _parse_leg(data: dict) -> tuple[Leg, Optional[dict]]:
 def _fill_team(slot: Slot, team: Optional[str], team_id: Optional[Id]) -> None:
     """Set a slot's display team from a game side, only when it isn't known yet.
 
-    A ``winner_of`` link is kept so the bracket connector still draws.
+    A ``winner_of`` link is kept so the advancement connector still draws.
     """
     if slot.team is None and team is not None:
         slot.team = team
@@ -150,7 +150,7 @@ def parse_bracket(data: dict) -> Bracket:
     """Build a :class:`Bracket` from an already-loaded JSON dict.
 
     ``tournament`` is optional here: it may be supplied dynamically at render time (see
-    :class:`~playoff_diagrams.diagram.PlayoffDiagram`).
+    :class:`~matamata.diagram.KnockoutStage`).
     """
     rounds = []
     for rd in _require(data, "rounds", "document"):

@@ -1,13 +1,13 @@
-"""Unit tests for parsing, display helpers and the PlayoffDiagram hooks."""
+"""Unit tests for parsing, display helpers and the KnockoutStage hooks."""
 
 import json
 import os
 
 import pytest
 
-from playoff_diagrams import PlayoffDiagram, parse_bracket
-from playoff_diagrams.model import Leg, Match, Pens, Resolver, Slot, aggregate
-from playoff_diagrams.parse import BracketError, validate_document
+from matamata import KnockoutStage, parse_bracket
+from matamata.model import Leg, Match, Pens, Resolver, Slot, aggregate
+from matamata.parse import BracketError, validate_document
 
 EXAMPLES = os.path.join(os.path.dirname(__file__), "..", "examples")
 
@@ -96,7 +96,7 @@ def test_ref_leg_keeps_its_baked_result():
 
 
 def test_get_match_wins_over_a_baked_result():
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_match(self, ref):
             return {"goals1": 3, "goals2": 0}
 
@@ -220,7 +220,7 @@ def test_render_option_defaults():
 
 
 def test_box_width_widens_the_layout():
-    from playoff_diagrams.layout import compute_layout
+    from matamata.layout import compute_layout
 
     doc = {
         "rounds": [
@@ -238,14 +238,14 @@ def test_box_width_widens_the_layout():
 
 
 def test_max_label_chars_truncates():
-    from playoff_diagrams.render import _truncate
+    from matamata.render import _truncate
 
     assert _truncate("Montevideo City Torque", 22) == "Montevideo City Torque"
     assert _truncate("Montevideo City Torque", 18) == "Montevideo City T…"
 
 
 def test_render_config_exposed_on_diagram():
-    diagram = PlayoffDiagram(
+    diagram = KnockoutStage(
         {
             "render": {"max_label_chars": 12},
             "rounds": [
@@ -260,7 +260,7 @@ def test_render_config_exposed_on_diagram():
 
 
 def test_score_text_shows_each_leg():
-    from playoff_diagrams.layout import _score_text
+    from matamata.layout import _score_text
 
     single = Match(id="m", home=Slot(team="H"), away=Slot(team="A"), legs=[Leg(3, 0)])
     assert _score_text(single, "home") == "3"
@@ -281,11 +281,11 @@ def test_score_text_shows_each_leg():
     assert _score_text(shoot, "away") == "1 0 (2)"
 
 
-# --- PlayoffDiagram hooks ---------------------------------------------------
+# --- KnockoutStage hooks ---------------------------------------------------
 
 
 def test_get_match_fills_a_single_leg():
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_match(self, ref):
             assert ref == 1001
             return {"team1": "Peñarol", "goals1": 2, "team2": "Nacional", "goals2": 1}
@@ -312,7 +312,7 @@ def test_get_match_fills_a_single_leg():
 
 
 def test_get_match_fills_pens():
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_match(self, ref):
             return {
                 "team1": "A",
@@ -344,7 +344,7 @@ def test_get_match_fills_pens():
 
 def test_get_match_orients_second_leg_by_team():
     # Leg 2 is played at the visitor's venue: its local is the tie's away side.
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_match(self, ref):
             if ref == 1:
                 return {
@@ -377,7 +377,7 @@ def test_get_match_orients_second_leg_by_team():
 
 
 def test_get_match_returning_none_leaves_the_leg():
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_match(self, ref):
             return None
 
@@ -400,7 +400,7 @@ def test_get_match_returning_none_leaves_the_leg():
 
 
 def test_tournament_and_season_overrides():
-    class D(PlayoffDiagram):
+    class D(KnockoutStage):
         def get_tournament(self):
             return "Copa Dinámica"
 
@@ -434,7 +434,7 @@ def test_diagram_accepts_a_json_string():
             ],
         }
     )
-    assert PlayoffDiagram(doc).render().startswith("<svg")
+    assert KnockoutStage(doc).render().startswith("<svg")
 
 
 @pytest.mark.parametrize("name", ["libertadores-2026.json", "knockout-8.json"])

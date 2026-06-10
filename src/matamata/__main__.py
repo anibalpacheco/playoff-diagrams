@@ -1,9 +1,9 @@
-"""Command-line entry point: render a bracket JSON document to SVG.
+"""Command-line entry point: render a knockout stage JSON document to SVG.
 
 Usage::
 
-    playoff-diagrams examples/libertadores-2026.json -o out.svg
-    python -m playoff_diagrams examples/knockout-8.json > out.svg
+    matamata examples/libertadores-2026.json -o out.svg
+    python -m matamata examples/knockout-8.json > out.svg
 """
 
 from __future__ import annotations
@@ -17,10 +17,10 @@ from .render import render_svg
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="playoff-diagrams",
-        description="Render a football playoff bracket JSON document to SVG.",
+        prog="matamata",
+        description="Render a tournament knockout stage JSON document to SVG.",
     )
-    parser.add_argument("input", help="path to a bracket JSON document")
+    parser.add_argument("input", help="path to a knockout stage JSON document")
     parser.add_argument(
         "-o",
         "--output",

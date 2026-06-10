@@ -1,4 +1,4 @@
-"""Turn a bracket into an SVG string using the deterministic layout.
+"""Turn a knockout stage into an SVG string using the deterministic layout.
 
 The output is a self-contained ``<svg>`` document. Styling is driven by CSS classes so
 the diagram can be themed by the host page; sensible defaults are embedded.
@@ -112,5 +112,5 @@ def render_layout(bracket: Bracket, layout: Layout) -> str:
 
 
 def render_svg(bracket: Bracket) -> str:
-    """Render ``bracket`` to a self-contained SVG document string."""
+    """Render the knockout stage to a self-contained SVG document string."""
     return render_layout(bracket, compute_layout(bracket))

@@ -1,4 +1,4 @@
-"""Deterministic geometry for a single-elimination bracket.
+"""Deterministic geometry for a single-elimination knockout stage.
 
 Rounds become columns laid out left to right. Each match is a fixed-size box with a
 home row and an away row. A match in a later round is centered vertically between the

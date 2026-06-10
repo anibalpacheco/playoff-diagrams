@@ -1,10 +1,10 @@
-"""Host integration point: a subclassable bracket diagram.
+"""Host integration point: a subclassable knockout stage diagram.
 
 The library is a pure renderer. To plug a host system into it, subclass
-:class:`PlayoffDiagram`, override the hooks you need, instantiate it with the JSON
+:class:`KnockoutStage`, override the hooks you need, instantiate it with the JSON
 document and call :meth:`render`::
 
-    class MyDiagram(PlayoffDiagram):
+    class MyDiagram(KnockoutStage):
         def get_match(self, ref):
             game = my_db.fetch(ref)
             return {
@@ -23,9 +23,9 @@ document and call :meth:`render`::
 Resolution is automatic: whenever a leg in the document carries a ``ref``,
 :meth:`get_match` is called with it. Legs without a ``ref`` are left untouched.
 
-The diagram also *maintains* its document: :meth:`PlayoffDiagram.apply_results` writes
+The diagram also *maintains* its document: :meth:`KnockoutStage.apply_results` writes
 played results onto the JSON in place (and, unless told otherwise, settles the winners),
-so a host can keep the stored bracket up to date without touching its structure.
+so a host can keep the stored document up to date without touching its structure.
 """
 
 from __future__ import annotations
@@ -61,8 +61,8 @@ def _decide(agg: tuple[int, int], pens: Optional[Pens]) -> Optional[int]:
     return 1 if home > away else 2
 
 
-class PlayoffDiagram:
-    """Render a bracket document, with overridable hooks for live host data.
+class KnockoutStage:
+    """Render a knockout stage document, with overridable hooks for live host data.
 
     Override any of :meth:`get_match`, :meth:`get_tournament` and :meth:`get_season`;
     none of them is required. The defaults read straight from the document, so the base
@@ -111,7 +111,7 @@ class PlayoffDiagram:
         return bracket
 
     def render(self) -> str:
-        """Render the bracket to a self-contained SVG document string."""
+        """Render the knockout stage to a self-contained SVG document string."""
         return render_svg(self.build())
 
     # --------------------------------------------------------------- results

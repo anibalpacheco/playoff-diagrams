@@ -13,14 +13,14 @@ import os
 
 import pytest
 
-from playoff_diagrams import load_bracket, render_svg
+from matamata import load_bracket, render_svg
 
 EXAMPLES = os.path.join(os.path.dirname(__file__), "..", "examples")
 GOLDEN = os.path.join(os.path.dirname(__file__), "golden")
 
 # libertadores-2026.json is host-resolved (one tie carries refs), so it is rendered
 # through its example host (see the libertadores_diagram fixture) rather than the base
-# loader; example_data.json is that host's lookup table, not a bracket document.
+# loader; example_data.json is that host's lookup table, not a knockout stage document.
 HOST_EXAMPLE = "libertadores-2026.json"
 NON_BRACKET = {HOST_EXAMPLE, "example_data.json"}
 EXAMPLE_FILES = sorted(
