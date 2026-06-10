@@ -11,7 +11,7 @@ playoffs onto its own business objects (e.g. a Championship or Cup entity) and p
 them apart from any presentation concern — updating results means editing a document,
 never the code.
 
-Rendered on the fly from
+Example rendered from
 [`examples/libertadores-2026.json`](examples/libertadores-2026.json):
 
 ![Copa Libertadores 2026 bracket](docs/libertadores-2026.png)
