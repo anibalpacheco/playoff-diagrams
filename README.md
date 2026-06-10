@@ -43,9 +43,9 @@ point the command at any JSON file that follows [`docs/format.md`](docs/format.m
 Use it from Python:
 
 ```python
-from matamata import load_bracket, render_svg
+from matamata import load_stage, render_svg
 
-svg = render_svg(load_bracket("examples/knockout-8.json"))
+svg = render_svg(load_stage("examples/knockout-8.json"))
 ```
 
 To use it in your own project instead, install straight from GitHub:

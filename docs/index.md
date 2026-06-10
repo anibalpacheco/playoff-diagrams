@@ -52,20 +52,20 @@ Open the resulting `.svg` in a browser to view the schedule.
 ### Rendering from Python
 
 ```python
-from matamata import load_bracket, render_svg
+from matamata import load_stage, render_svg
 
-svg = render_svg(load_bracket("examples/knockout-8.json"))
+svg = render_svg(load_stage("examples/knockout-8.json"))
 ```
 
-`parse_bracket` does the same from an already-loaded dict. In a web app the SVG is the
+`parse_stage` does the same from an already-loaded dict. In a web app the SVG is the
 response body — e.g. a Django view:
 
 ```python
 from django.http import HttpResponse
-from matamata import parse_bracket, render_svg
+from matamata import parse_stage, render_svg
 
 def knockout_stage_svg(request, championship):
-    svg = render_svg(parse_bracket(championship.knockout_stage_json))
+    svg = render_svg(parse_stage(championship.knockout_stage_json))
     return HttpResponse(svg, content_type="image/svg+xml")
 ```
 

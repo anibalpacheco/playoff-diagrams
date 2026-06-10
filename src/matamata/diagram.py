@@ -33,8 +33,8 @@ from __future__ import annotations
 import json
 from typing import Any, Iterator, Optional, Union
 
-from .model import Bracket, Id, Match, Pens, RenderOptions, aggregate, pens_of
-from .parse import BracketError, _parse_match, apply_game, parse_bracket, render_options
+from .model import Id, Match, Pens, RenderOptions, Stage, aggregate, pens_of
+from .parse import StageError, _parse_match, apply_game, parse_stage, render_options
 from .render import render_svg
 
 # What get_match returns: one flat game dict, the same shape as an inline leg. "1" is the
@@ -98,17 +98,17 @@ class KnockoutStage:
         return self._doc.get("season")
 
     # ----------------------------------------------------------------- build
-    def build(self) -> Bracket:
+    def build(self) -> Stage:
         """Parse the document, hydrate it from the hooks and return the model."""
-        bracket = parse_bracket(self._doc)
-        for rnd in bracket.rounds:
+        stage = parse_stage(self._doc)
+        for rnd in stage.rounds:
             for match in rnd.matches:
                 self._hydrate_match(match)
         tournament = self.get_tournament()
         if tournament is not None:
-            bracket.tournament = tournament
-        bracket.season = self.get_season()
-        return bracket
+            stage.tournament = tournament
+        stage.season = self.get_season()
+        return stage
 
     def render(self) -> str:
         """Render the knockout stage to a self-contained SVG document string."""
@@ -157,18 +157,16 @@ class KnockoutStage:
         """Validate one result dict and return the (match, leg) pair it addresses."""
         unknown = set(result) - _RESULT_KEYS
         if unknown:
-            raise BracketError(
-                f"result has unknown key(s): {', '.join(sorted(unknown))}"
-            )
+            raise StageError(f"result has unknown key(s): {', '.join(sorted(unknown))}")
         for key in _SCORE_KEYS:
             value = result.get(key, 0)
             if not isinstance(value, int) or isinstance(value, bool) or value < 0:
-                raise BracketError(f"result '{key}' must be a non-negative integer")
+                raise StageError(f"result '{key}' must be a non-negative integer")
         if ("ref" in result) == ("id" in result):
-            raise BracketError("a result needs exactly one of 'ref' or 'id'")
+            raise StageError("a result needs exactly one of 'ref' or 'id'")
         if "ref" in result:
             if "leg" in result:
-                raise BracketError("'leg' goes with 'id', not with 'ref'")
+                raise StageError("'leg' goes with 'id', not with 'ref'")
             return self._leg_by_ref(result["ref"])
         return self._leg_by_number(result["id"], result.get("leg", 1))
 
@@ -180,21 +178,21 @@ class KnockoutStage:
             if leg.get("ref") == ref
         ]
         if not found:
-            raise BracketError(f"no leg carries ref {ref!r}")
+            raise StageError(f"no leg carries ref {ref!r}")
         if len(found) > 1:
-            raise BracketError(f"ref {ref!r} appears in more than one leg")
+            raise StageError(f"ref {ref!r} appears in more than one leg")
         return found[0]
 
     def _leg_by_number(self, match_id: str, number: Any) -> tuple[dict, dict]:
         if not isinstance(number, int) or isinstance(number, bool) or number < 1:
-            raise BracketError("'leg' must be a 1-based integer")
+            raise StageError("'leg' must be a 1-based integer")
         for match in self._match_dicts():
             if match.get("id") == match_id:
                 legs = match.setdefault("legs", [])
                 while len(legs) < number:
                     legs.append({})
                 return match, legs[number - 1]
-        raise BracketError(f"no match has id {match_id!r}")
+        raise StageError(f"no match has id {match_id!r}")
 
     @staticmethod
     def _write_result(match_data: dict, leg_data: dict, result: ResultData) -> None:

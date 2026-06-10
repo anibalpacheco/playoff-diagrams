@@ -109,7 +109,7 @@ class RenderOptions:
 
 
 @dataclass
-class Bracket:
+class Stage:
     rounds: list[Round]
     tournament: str = ""
     season: Optional[str] = None
@@ -148,7 +148,7 @@ class Resolver:
     out who won.
     """
 
-    def __init__(self, bracket: Optional[Bracket] = None) -> None:  # bracket unused
+    def __init__(self, stage: Optional[Stage] = None) -> None:  # stage unused
         pass
 
     def label(self, slot: Slot) -> str:

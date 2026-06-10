@@ -11,20 +11,20 @@ import json
 import os
 from typing import Any, Optional
 
-from .model import Bracket, Id, Leg, Match, Pens, RenderOptions, Round, Slot
+from .model import Id, Leg, Match, Pens, RenderOptions, Round, Slot, Stage
 
 _SCHEMA_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "docs", "schema.json"
 )
 
 
-class BracketError(ValueError):
+class StageError(ValueError):
     """Raised when a document cannot be parsed into the model."""
 
 
 def _require(obj: dict, key: str, where: str) -> Any:
     if key not in obj:
-        raise BracketError(f"missing '{key}' in {where}")
+        raise StageError(f"missing '{key}' in {where}")
     return obj[key]
 
 
@@ -52,7 +52,7 @@ def _parse_winner(value: Any, where: str) -> Optional[str]:
         return "home"
     if value in (2, "2"):
         return "away"
-    raise BracketError(f"{where} 'winner' must be 1 (top) or 2 (bottom)")
+    raise StageError(f"{where} 'winner' must be 1 (top) or 2 (bottom)")
 
 
 # The flat keys of a played game, as carried by an inline leg and returned by
@@ -126,7 +126,7 @@ def _parse_match(data: dict) -> Match:
     where = f"match '{mid}'"
     settle = data.get("settle")
     if settle not in (None, False):
-        raise BracketError(f"{where} 'settle' admits only false")
+        raise StageError(f"{where} 'settle' admits only false")
     # Sides are described by flat match-level fields: 1 = top (home), 2 = bottom (away).
     match = Match(
         id=mid,
@@ -146,8 +146,8 @@ def _parse_match(data: dict) -> Match:
     return match
 
 
-def parse_bracket(data: dict) -> Bracket:
-    """Build a :class:`Bracket` from an already-loaded JSON dict.
+def parse_stage(data: dict) -> Stage:
+    """Build a :class:`Stage` from an already-loaded JSON dict.
 
     ``tournament`` is optional here: it may be supplied dynamically at render time (see
     :class:`~matamata.diagram.KnockoutStage`).
@@ -158,33 +158,33 @@ def parse_bracket(data: dict) -> Bracket:
         matches = [_parse_match(m) for m in _require(rd, "matches", f"round '{name}'")]
         rounds.append(Round(name=name, matches=matches))
     render = render_options(data)
-    bracket = Bracket(
+    stage = Stage(
         rounds=rounds,
         tournament=data.get("tournament", ""),
         season=data.get("season"),
         render=render,
     )
-    _check_references(bracket)
-    return bracket
+    _check_references(stage)
+    return stage
 
 
-def _check_references(bracket: Bracket) -> None:
+def _check_references(stage: Stage) -> None:
     """Ensure every ``winner_of`` points at an existing match id."""
-    known = set(bracket.matches_by_id())
-    for rd in bracket.rounds:
+    known = set(stage.matches_by_id())
+    for rd in stage.rounds:
         for match in rd.matches:
             for slot in (match.home, match.away):
                 if slot.winner_of is not None and slot.winner_of not in known:
-                    raise BracketError(
+                    raise StageError(
                         f"match '{match.id}' references unknown match "
                         f"'{slot.winner_of}'"
                     )
 
 
-def load_bracket(path: str) -> Bracket:
-    """Read a JSON file from ``path`` and parse it into a :class:`Bracket`."""
+def load_stage(path: str) -> Stage:
+    """Read a JSON file from ``path`` and parse it into a :class:`Stage`."""
     with open(path, encoding="utf-8") as fh:
-        return parse_bracket(json.load(fh))
+        return parse_stage(json.load(fh))
 
 
 def validate_document(data: dict) -> None:

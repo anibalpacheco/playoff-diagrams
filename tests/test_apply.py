@@ -3,7 +3,7 @@
 import pytest
 
 from matamata import KnockoutStage
-from matamata.parse import BracketError, validate_document
+from matamata.parse import StageError, validate_document
 
 
 def doc():
@@ -147,14 +147,14 @@ def test_applied_document_still_renders():
     ],
 )
 def test_bad_results_are_rejected(bad):
-    with pytest.raises(BracketError):
+    with pytest.raises(StageError):
         KnockoutStage(doc()).apply_results(bad)
 
 
 def test_duplicated_ref_is_ambiguous():
     document = doc()
     match_of(document, "s2")["legs"][1]["ref"] = 901
-    with pytest.raises(BracketError, match="more than one"):
+    with pytest.raises(StageError, match="more than one"):
         KnockoutStage(document).apply_results({"ref": 901, "goals1": 1, "goals2": 0})
 
 

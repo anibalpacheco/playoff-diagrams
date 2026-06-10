@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .parse import BracketError, load_bracket
+from .parse import StageError, load_stage
 from .render import render_svg
 
 
@@ -29,8 +29,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        svg = render_svg(load_bracket(args.input))
-    except (BracketError, OSError, ValueError) as exc:
+        svg = render_svg(load_stage(args.input))
+    except (StageError, OSError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
