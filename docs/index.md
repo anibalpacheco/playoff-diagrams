@@ -285,6 +285,56 @@ Three things changed in the document, all from that single call:
 The host can now persist the new version of the document — the value of `updated` —
 and every render from then on shows the new state.
 
+## Modeling special tie features
+
+### A pairing pending a draw
+
+In some cups the next round is not wired beforehand: it is redrawn from the winners
+(the FA Cup does this after every round). Until the draw happens there is no
+advancement path to declare, and the document models that by simply omitting
+`winnerof{n}`: the side renders "TBD" and no connector is drawn.
+
+In `examples/facup-pending-draw.json` the quarterfinals are under way but the
+semifinal draw is still pending — both semifinals carry only their `id`:
+
+```json
+{ "name": "Semifinals", "matches": [{ "id": "sf1" }, { "id": "sf2" }] }
+```
+
+The final is wired normally (`"winnerof1": "sf1"`, `"winnerof2": "sf2"`), because the
+final's pairing is never redrawn:
+
+![FA Cup, semifinal draw pending](facup-pending-draw.png)
+
+Once the draw is made, whoever maintains the document writes the drawn pairings as
+plain `team{n}` names — **not** as `winnerof{n}` links. A link declares a
+preestablished advancement path and draws its connector; a redrawn round has no such
+path, and connectors following a draw could cross each other arbitrarily.
+`examples/facup-drawn.json` is the same stage right after the draw:
+
+```json
+{
+  "name": "Semifinals",
+  "matches": [
+    {
+      "id": "sf1",
+      "team1": "Arsenal",
+      "team2": "Manchester United"
+    },
+    {
+      "id": "sf2",
+      "team1": "Manchester City",
+      "team2": "Liverpool"
+    }
+  ]
+}
+```
+
+The semifinals now name their teams but stay unconnected to the quarterfinals, which
+is exactly what happened — the draw, not the schedule, decided the pairings:
+
+![FA Cup, semifinals drawn](facup-drawn.png)
+
 ## Testing
 
 Install the development extras and run the suite:

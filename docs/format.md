@@ -79,9 +79,11 @@ numbering. There are no `home`/`away` objects.
 - `id` — internal identifier, referenced by `winnerof1`/`winnerof2`. Not a display value.
 - `winnerof1`/`winnerof2` — explicit advancement links: each must reference the `id` of
   another match. References must not form a cycle. They draw the connector and, while
-  unresolved, show a placeholder ("Winner QF1"). When the pairing does not exist yet —
-  e.g. the next round is redrawn from the winners — omit the link: the side renders
-  "TBD" and no connector is drawn until the draw is written into the document.
+  unresolved, show a placeholder ("Winner QF1"). They declare a **preestablished**
+  advancement path: in a round that is redrawn from the winners no such path exists,
+  so omit the links — the sides render "TBD" with no connector — and, once the draw
+  is made, write the drawn pairings as plain `team{n}` names, keeping the links (and
+  their connectors, which could cross arbitrarily) out.
 - `team1`/`team2` (optional `id1`/`id2`) — a side's known team: an entrant, or the team
   that advanced (written here by whatever maintains the JSON; the renderer never works
   it out). Legs may also name teams: they fill in whatever the match level leaves
