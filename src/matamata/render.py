@@ -13,6 +13,9 @@ from .model import Stage
 
 _LABEL_PAD = 10
 _SCORE_PAD = 8
+_CREST_SIZE = 16  # crest/flag side, vertically centered in the 24-unit row
+_CREST_GAP = 6
+_ATTR = {'"': "&quot;"}  # extra escape for attribute values
 
 _STYLE = """
   .pd-bg { fill: #ffffff; }
@@ -45,8 +48,17 @@ def _row(
     text_y = top + ROW_H / 2 + 4
     cls = "pd-win" if side.is_winner else ""
     out.append(f'<g class="{cls}">')
+    label_x = pm.x + _LABEL_PAD
+    if side.crest:
+        out.append(
+            f'<image class="pd-crest" '
+            f'href="{escape(side.crest, _ATTR)}" '
+            f'x="{label_x:.0f}" y="{top + (ROW_H - _CREST_SIZE) / 2:.0f}" '
+            f'width="{_CREST_SIZE}" height="{_CREST_SIZE}"/>'
+        )
+        label_x += _CREST_SIZE + _CREST_GAP
     out.append(
-        f'<text class="pd-team" x="{pm.x + _LABEL_PAD:.0f}" y="{text_y:.0f}">'
+        f'<text class="pd-team" x="{label_x:.0f}" y="{text_y:.0f}">'
         f"{escape(_truncate(side.label, max_chars))}</text>"
     )
     if side.score:

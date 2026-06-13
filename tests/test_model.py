@@ -430,6 +430,50 @@ def test_get_match_returning_none_leaves_the_leg():
     assert stage.matches_by_id()["f"].legs[0].played is False
 
 
+def test_get_crest_emits_images():
+    class D(KnockoutStage):
+        def get_crest(self, team_id, team_name):
+            return f"https://img.example/{team_name}.png"
+
+    doc = {
+        "rounds": [
+            {
+                "name": "F",
+                "matches": [{"id": "f", "team1": "Flamengo", "team2": "Boca Juniors"}],
+            }
+        ]
+    }
+    svg = D(doc).render()
+    assert svg.count("<image") == 2
+    assert 'href="https://img.example/Flamengo.png"' in svg
+
+    # The base class resolves nothing: no <image> elements, nothing changes.
+    assert "<image" not in KnockoutStage(doc).render()
+
+
+def test_get_crest_receives_the_side_identity():
+    calls = []
+
+    class D(KnockoutStage):
+        def get_crest(self, team_id, team_name):
+            calls.append((team_id, team_name))
+
+    D(
+        {
+            "rounds": [
+                {
+                    "name": "SF",
+                    "matches": [{"id": "sf1", "team1": "A", "id1": 7, "team2": "B"}],
+                },
+                {"name": "F", "matches": [{"id": "f", "winnerof1": "sf1"}]},
+            ]
+        }
+    ).build()
+    # Only sides with an identity are queried: the final's sides (an unresolved
+    # winnerof link and a pending-draw side) are skipped.
+    assert calls == [(7, "A"), (None, "B")]
+
+
 def test_tournament_and_season_overrides():
     class D(KnockoutStage):
         def get_tournament(self):

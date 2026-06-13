@@ -150,7 +150,9 @@ in the same shape as a self-contained leg — `team1`/`goals1`/`team2`/`goals2` 
 first), with optional `pen1`/`pen2` and `id1`/`id2`. Return only what you have; the
 renderer fills the leg's scores and, where a side has no team yet, its name — keeping any
 `winnerof` link. `get_tournament()` and `get_season()` can likewise be supplied
-dynamically.
+dynamically, and `get_crest(team_id, team_name)` can resolve each side's crest/flag
+image from the side's identity. The document itself never carries images: crests have
+no JSON surface, by design.
 
 ## Applying results (non-normative)
 

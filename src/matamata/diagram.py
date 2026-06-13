@@ -22,6 +22,8 @@ document and call :meth:`render`::
 
 Resolution is automatic: whenever a leg in the document carries a ``ref``,
 :meth:`get_match` is called with it. Legs without a ``ref`` are left untouched.
+:meth:`get_crest` can likewise supply each side's crest/flag image from the side's
+identity; the document itself never carries images.
 
 The diagram also *maintains* its document: :meth:`KnockoutStage.apply_results` writes
 played results onto the JSON in place (and, unless told otherwise, settles the winners),
@@ -89,6 +91,19 @@ class KnockoutStage:
         """
         return None
 
+    def get_crest(  # pylint: disable=unused-argument
+        self, team_id: Optional[Id], team_name: Optional[str]
+    ) -> Optional[str]:
+        """Return the image source for a side's crest (clubs) or flag, or ``None``.
+
+        Called once per side that has an identity — ``team_id`` is the side's
+        ``id{n}`` when the document (or ``get_match``) supplies one, ``team_name``
+        its team name. Return a URL, a path or a data URI; the renderer emits it as
+        an SVG ``<image>`` element and never fetches or processes it. The base
+        returns ``None``: no crests, nothing changes for existing hosts.
+        """
+        return None
+
     def get_tournament(self) -> Optional[str]:
         """Return the tournament name. Defaults to the document's ``tournament``."""
         return self._doc.get("tournament")
@@ -104,6 +119,14 @@ class KnockoutStage:
         for rnd in stage.rounds:
             for match in rnd.matches:
                 self._hydrate_match(match)
+                for slot in (match.home, match.away):
+                    if slot.team is None and slot.team_id is None:
+                        continue  # no identity to resolve a crest from
+                    # get_crest is an overridable hook; the base returns None, so
+                    # pylint follows that literal return (as with get_match above).
+                    slot.crest = self.get_crest(  # pylint: disable=assignment-from-none
+                        slot.team_id, slot.team
+                    )
         tournament = self.get_tournament()
         if tournament is not None:
             stage.tournament = tournament

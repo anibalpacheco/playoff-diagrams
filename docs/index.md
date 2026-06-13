@@ -125,6 +125,35 @@ For a runnable example of this integration, see `examples/libertadores_host.py` 
 it resolves the refs of the Copa Libertadores example against a JSON lookup table,
 and includes the instructions to run it and watch it work.
 
+### Team crests and flags
+
+A schedule is easier to scan when each side shows the team's crest (clubs) or flag
+(national teams) next to its name. Crests exist **only through the `KnockoutStage`
+class — the JSON document has no crest surface**: team names repeat through the
+rounds as teams advance, a cost paid for quick human editing of the JSON, and image
+URLs would add nothing to that editability and a lot of noise against it. So it is
+the class that resolves the image from each side's identity, the same way
+`get_match` resolves results:
+
+```python
+class ChampionshipDiagram(KnockoutStage):
+    def get_crest(self, team_id, team_name):
+        if team_id is None:
+            return None
+        return Team.objects.get(pk=team_id).crest_url
+```
+
+`get_crest` is called once per side that has an identity — `team_id` is the side's
+`id{n}` when the document (or `get_match`) supplies one, `team_name` its team name.
+Return a URL, a path or a data URI, or `None` for no image (the base implementation
+always returns `None`, so nothing changes for existing hosts). The renderer emits it
+as an SVG `<image>` element before the team name — it never fetches or processes the
+image — and rows without a crest keep their layout:
+
+![A schedule with crests](crests.png)
+
+Documents rendered without the class (the CLI, `render_svg`) simply show no crests.
+
 ### The `apply_results` method
 
 When a game finishes (or while it is being played), write its result onto the document

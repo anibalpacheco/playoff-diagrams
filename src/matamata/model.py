@@ -62,6 +62,10 @@ class Slot:
     team_id: Optional[Id] = None
     winner_of: Optional[str] = None
     tbd: bool = False
+    # Image source for the side's crest/flag. Filled by the KnockoutStage path
+    # (the get_crest hook) — never parsed from the document, which has no crest
+    # surface by design.
+    crest: Optional[str] = None
 
     @property
     def kind(self) -> str:

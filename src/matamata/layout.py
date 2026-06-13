@@ -9,6 +9,7 @@ with a fixed gap. No external layout engine is involved.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional
 
 from .model import Match, Resolver, Stage, pens_of
 
@@ -30,6 +31,7 @@ class SideView:
     label: str
     score: str  # "" when not played
     is_winner: bool
+    crest: Optional[str] = None  # image source, only ever set via KnockoutStage
 
 
 @dataclass
@@ -90,6 +92,7 @@ def _side_view(resolver: Resolver, match: Match, side: str) -> SideView:
         label=resolver.label(slot),
         score=_score_text(match, side),
         is_winner=match.winner == side,  # explicit only; never computed
+        crest=slot.crest,
     )
 
 
