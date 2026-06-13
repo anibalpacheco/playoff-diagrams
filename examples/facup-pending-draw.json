@@ -1,0 +1,52 @@
+{
+  "tournament": "FA Cup",
+  "season": "2025-26",
+  "rounds": [
+    {
+      "name": "Quarterfinals",
+      "matches": [
+        {
+          "id": "qf1",
+          "legs": [
+            { "team1": "Manchester City", "goals1": 2, "team2": "Newcastle", "goals2": 1 }
+          ],
+          "winner": 1
+        },
+        {
+          "id": "qf2",
+          "legs": [
+            {
+              "team1": "Chelsea",
+              "goals1": 1,
+              "team2": "Arsenal",
+              "goals2": 1,
+              "pen1": 3,
+              "pen2": 4
+            }
+          ],
+          "winner": 2
+        },
+        {
+          "id": "qf3",
+          "legs": [
+            { "team1": "Liverpool", "goals1": 3, "team2": "Aston Villa", "goals2": 0 }
+          ],
+          "winner": 1
+        },
+        {
+          "id": "qf4",
+          "team1": "Manchester United",
+          "team2": "Tottenham"
+        }
+      ]
+    },
+    {
+      "name": "Semifinals",
+      "matches": [{ "id": "sf1" }, { "id": "sf2" }]
+    },
+    {
+      "name": "Final",
+      "matches": [{ "id": "final", "winnerof1": "sf1", "winnerof2": "sf2" }]
+    }
+  ]
+}
