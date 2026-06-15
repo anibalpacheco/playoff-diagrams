@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/matamata/docs/schema.json",
+  "title": "Knockout stage source document",
+  "type": "object",
+  "required": ["rounds"],
+  "additionalProperties": false,
+  "properties": {
+    "tournament": { "type": "string", "minLength": 1 },
+    "season": { "type": "string" },
+    "render": { "$ref": "#/$defs/render" },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/round" }
+    }
+  },
+  "$defs": {
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_label_chars": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 22
+        },
+        "box_width": {
+          "type": "integer",
+          "minimum": 60,
+          "default": 190
+        }
+      }
+    },
+    "round": {
+      "type": "object",
+      "required": ["name", "matches"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "matches": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/match" }
+        }
+      }
+    },
+    "match": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "comment": "two sides, 1 = top, 2 = bottom; winnerof{n} wires advancement, team{n} names a known side",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "winnerof1": { "type": "string", "minLength": 1 },
+        "winnerof2": { "type": "string", "minLength": 1 },
+        "team1": { "type": "string", "minLength": 1 },
+        "team2": { "type": "string", "minLength": 1 },
+        "id1": { "type": ["string", "integer"] },
+        "id2": { "type": ["string", "integer"] },
+        "legs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/leg" }
+        },
+        "winner": { "enum": [1, 2] },
+        "settle": {
+          "const": false,
+          "comment": "opts this match out of KnockoutStage.apply_results' settling"
+        }
+      }
+    },
+    "leg": {
+      "type": "object",
+      "additionalProperties": false,
+      "comment": "every field optional: {} is a scheduled leg; 'ref' points at the real game and may coexist with a baked result (live host data wins at render); a leg without team names is read as tie-oriented (1 = the match's top side)",
+      "properties": {
+        "ref": { "type": ["string", "integer"] },
+        "team1": { "type": "string", "minLength": 1 },
+        "goals1": { "type": "integer", "minimum": 0 },
+        "id1": { "type": ["string", "integer"] },
+        "pen1": { "type": "integer", "minimum": 0 },
+        "team2": { "type": "string", "minLength": 1 },
+        "goals2": { "type": "integer", "minimum": 0 },
+        "id2": { "type": ["string", "integer"] },
+        "pen2": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
