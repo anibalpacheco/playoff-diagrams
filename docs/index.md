@@ -495,3 +495,9 @@ pytest
 The suite includes golden (snapshot) SVG tests: each example document is rendered and
 compared against a versioned reference SVG under `tests/golden/`. This catches visual
 regressions without a browser.
+
+To eyeball the renders yourself, the repo ships a small dev tool, `examples/gallery.py`,
+that renders **every example** — both the SVG diagram and the HTML table, including the
+host-resolved ones with crests and flags — into a single self-contained `file://` page,
+`examples/gallery.html` (committed, so you can just open it). Its header shows the command
+to regenerate it.
